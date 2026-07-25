@@ -22,6 +22,16 @@ try {
 	run("git checkout master");
 
 	console.log("📋 同步内容和配置...");
+	// 先删除 master 上存在但 admin-panel 上不存在的文件（处理删除操作）
+	try {
+		const masterFiles = run("git ls-tree -r master --name-only -- src/content/ src/config/").split("\n").filter(Boolean);
+		const adminFiles = run("git ls-tree -r admin-panel --name-only -- src/content/ src/config/").split("\n").filter(Boolean);
+		const toDelete = masterFiles.filter(f => !adminFiles.includes(f));
+		for (const f of toDelete) {
+			try { run(`git rm --quiet "${f}"`); } catch {}
+		}
+	} catch {}
+	// 从 admin-panel 复制文件（覆盖 + 新增）
 	run("git checkout admin-panel -- src/content/ src/config/");
 
 	console.log("✅ 提交...");
