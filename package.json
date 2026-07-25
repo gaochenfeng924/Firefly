@@ -17,7 +17,7 @@
     "lint": "biome check --write ./src",
     "preinstall": "npx only-allow pnpm",
     "lqips": "npx tsx scripts/generate-lqips.ts",
-    "publish": "node scripts/publish.mjs"
+    "deploy": "node scripts/publish.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
