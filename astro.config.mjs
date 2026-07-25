@@ -65,6 +65,8 @@ const adapter = process.env.CF_WORKERS
 export default defineConfig({
 	site: siteConfig.site_url,
 
+	output: "hybrid",
+
 	base: "/",
 	trailingSlash: "always",
 
