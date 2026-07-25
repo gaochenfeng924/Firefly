@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
-    "@astrojs/cloudflare": "^14.1.4",
     "@astrojs/markdown-remark": "^7.2.1",
     "@astrojs/markdown-satteri": "^0.3.3",
     "@astrojs/mdx": "^7.0.2",
