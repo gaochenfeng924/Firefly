@@ -20,45 +20,43 @@
 	let dragging = $state(false);
 	let cmView: EditorView | null = null;
 
-	// 创建/更新 CodeMirror
+	// 创建 CodeMirror（只执行一次）
 	$effect(() => {
-		if (!editorRef) return;
+		if (!editorRef || cmView) return;
 
-		if (!cmView) {
-			const startState = EditorState.create({
-				doc: value || "",
-				extensions: [
-					markdown({ base: markdownLanguage }),
-					oneDark,
-					syntaxHighlighting(defaultHighlightStyle),
-					history(),
-					closeBrackets(),
-					keymap.of([...defaultKeymap, ...historyKeymap]),
-					placeholderExt("在此输入 Markdown 内容...（支持拖拽图片到此处上传）"),
-					EditorView.updateListener.of((update) => {
-						if (update.docChanged) {
-							onChange(update.state.doc.toString());
-						}
-					}),
-					EditorView.lineWrapping,
-				],
-			});
+		const startState = EditorState.create({
+			doc: value || "",
+			extensions: [
+				markdown({ base: markdownLanguage }),
+				oneDark,
+				syntaxHighlighting(defaultHighlightStyle),
+				history(),
+				closeBrackets(),
+				keymap.of([...defaultKeymap, ...historyKeymap]),
+				placeholderExt("在此输入 Markdown 内容...（支持拖拽图片到此处上传）"),
+				EditorView.updateListener.of((update) => {
+					if (update.docChanged) {
+						onChange(update.state.doc.toString());
+					}
+				}),
+				EditorView.lineWrapping,
+			],
+		});
 
-			cmView = new EditorView({
-				state: startState,
-				parent: editorRef,
-			});
-		} else if (cmView && value !== cmView.state.doc.toString()) {
-			// 外部更新值
+		cmView = new EditorView({
+			state: startState,
+			parent: editorRef,
+		});
+	});
+
+	// 外部值变化时同步到 CodeMirror（不重建编辑器）
+	let prevValue = $state(value);
+	$effect(() => {
+		if (cmView && value !== cmView.state.doc.toString()) {
 			cmView.dispatch({
 				changes: { from: 0, to: cmView.state.doc.length, insert: value || "" },
 			});
 		}
-
-		return () => {
-			cmView?.destroy();
-			cmView = null;
-		};
 	});
 
 	// 预览渲染
