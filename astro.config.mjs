@@ -60,7 +60,7 @@ if (process.env.NODE_ENV === "development") {
 export default defineConfig({
 	site: siteConfig.site_url,
 
-	output: "hybrid",
+	output: "static",
 
 	base: "/",
 	trailingSlash: "always",
