@@ -101,7 +101,12 @@ export const PUT: APIRoute = async ({ params, request }) => {
 		}
 
 		const body = await request.json();
-		const published = body.published || new Date().toISOString();
+		const published = body.published || (() => {
+			const _now = new Date();
+			const _offset = -_now.getTimezoneOffset();
+			const _pad = (n: number) => String(n).padStart(2, "0");
+			return `${_now.getFullYear()}-${_pad(_now.getMonth() + 1)}-${_pad(_now.getDate())}T${_pad(_now.getHours())}:${_pad(_now.getMinutes())}:${_pad(_now.getSeconds())}${_offset >= 0 ? "+" : "-"}${_pad(Math.abs(_offset) / 60)}:${_pad(Math.abs(_offset) % 60)}`;
+		})();
 		const frontmatter = `---\npublished: ${published}\npinned: ${body.pinned || false}\n---\n`;
 		const fullContent = `${frontmatter}${body.content || ""}\n`;
 

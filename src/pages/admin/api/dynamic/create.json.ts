@@ -25,7 +25,18 @@ export const POST: APIRoute = async ({ request }) => {
 
 		const now = new Date();
 		const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
-		const published = now.toISOString();
+		const published = (() => {
+			const offset = -now.getTimezoneOffset();
+			const pad = (n: number) => String(n).padStart(2, "0");
+			const y = now.getFullYear();
+			const M = pad(now.getMonth() + 1);
+			const d = pad(now.getDate());
+			const h = pad(now.getHours());
+			const m = pad(now.getMinutes());
+			const s = pad(now.getSeconds());
+			const tz = `${offset >= 0 ? "+" : "-"}${pad(Math.abs(offset) / 60)}:${pad(Math.abs(offset) % 60)}`;
+			return `${y}-${M}-${d}T${h}:${m}:${s}${tz}`;
+		})();
 
 		const fileName = `${timestamp}.md`;
 		const filePath = path.resolve(process.cwd(), "src/content/dynamic", fileName);
