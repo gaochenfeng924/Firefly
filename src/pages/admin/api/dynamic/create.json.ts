@@ -25,12 +25,12 @@ export const POST: APIRoute = async ({ request }) => {
 
 		const now = new Date();
 		const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
-		const published = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+		const published = now.toISOString();
 
 		const fileName = `${timestamp}.md`;
 		const filePath = path.resolve(process.cwd(), "src/content/dynamic", fileName);
 
-		const frontmatter = `---\npublished: ${publishedISO}\npinned: ${body.pinned || false}\n---\n`;
+		const frontmatter = `---\npublished: ${published}\npinned: ${body.pinned || false}\n---\n`;
 		const fullContent = `${frontmatter}${content}\n`;
 
 		fs.writeFileSync(filePath, fullContent, "utf-8");
