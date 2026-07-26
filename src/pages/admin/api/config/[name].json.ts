@@ -86,8 +86,29 @@ export const PUT: APIRoute = async ({ params, request }) => {
 		const { values } = await request.json();
 		if (!values || typeof values !== "object") return new Response(JSON.stringify({ error: "缺少 values" }), { status: 400 });
 
-		// 保存功能需通过子进程操作文件（绕过 unenv 拦截）
-		return new Response(JSON.stringify({ success: true, message: "已保存" }), {
+		const fs = await import("node:fs");
+		const meta = CONFIG_META[name];
+		const configPath = decodeURIComponent(new URL("../../../../..", import.meta.url).pathname).replace(/^\//, "") + "/" + meta.file;
+		let content = fs.readFileSync(configPath, "utf-8");
+		let changed = false;
+
+		for (const [key, value] of Object.entries(values)) {
+			const field = meta.fields[key];
+			if (!field) continue;
+			const searchKey = field.path?.[field.path.length - 1] || key;
+			const serialized = typeof value === "boolean" ? String(value)
+				: typeof value === "number" ? String(value)
+				: `"${String(value).replace(/"/g, '\\"')}"`;
+			const regex = new RegExp(`(\\b${searchKey}\\s*:\\s*).*?(,|\\n)`, "");
+			if (regex.test(content)) {
+				content = content.replace(regex, `$1${serialized}$2`);
+				changed = true;
+			}
+		}
+
+		if (changed) fs.writeFileSync(configPath, content, "utf-8");
+
+		return new Response(JSON.stringify({ success: true, changed, message: changed ? "已更新" : "无需更改" }), {
 			status: 200, headers: { "Content-Type": "application/json" },
 		});
 	} catch (err) {
