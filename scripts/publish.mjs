@@ -1,5 +1,6 @@
 // fb = 一键发布：提交 admin-panel 所有改动 → 同步到 master → 推送
 import { execSync } from "node:child_process";
+import { existsSync, rmSync, mkdirSync } from "node:fs";
 
 function run(cmd, silent = false) {
 	if (!silent) console.log(`> ${cmd}`);
@@ -28,16 +29,13 @@ try {
 	console.log("🔀 切换到 master...");
 	run("git checkout master");
 
-	// 同步所有文件（内容 + 配置，不含管理面板代码）
-	console.log("📋 从 admin-panel 同步更改...");
-	try {
-		const masterFiles = run("git ls-tree -r master --name-only -- src/content/ src/config/ src/assets/").split("\n").filter(Boolean);
-		const adminFiles = run("git ls-tree -r admin-panel --name-only -- src/content/ src/config/ src/assets/").split("\n").filter(Boolean);
-		const toDelete = masterFiles.filter(f => !adminFiles.includes(f));
-		for (const f of toDelete) {
-			try { run(`git rm --quiet "${f}"`, true); } catch {}
-		}
-	} catch {}
+	console.log("📋 同步所有更改（content + config + assets）...");
+	// 先清空再复制，确保已删除的文件不残留
+	const dirs = ["src/content/posts", "src/content/dynamic"];
+	for (const d of dirs) {
+		if (existsSync(d)) rmSync(d, { recursive: true, force: true });
+		mkdirSync(d, { recursive: true });
+	}
 	run("git checkout admin-panel -- src/content/ src/config/ src/assets/");
 
 	// 提交并推送 master
