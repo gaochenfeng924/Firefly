@@ -1,5 +1,4 @@
 import { setMaxListeners } from "node:events";
-import cloudflare from "@astrojs/cloudflare";
 import { unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
@@ -55,10 +54,6 @@ if (process.env.NODE_ENV === "development") {
 	setMaxListeners(20);
 }
 
-const adapter = cloudflare({
-		prerenderEnvironment: "node",
-	});
-
 // https://astro.build/config
 export default defineConfig({
 	site: siteConfig.site_url,
@@ -104,7 +99,6 @@ export default defineConfig({
 			});
 	})(),
 
-	adapter,
 
 	// 图像优化配置
 	image: {
