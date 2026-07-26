@@ -30,6 +30,7 @@ export const profileConfig: ProfileConfig = {
 		{ icon: "fa7-brands:linux", name: "Linux" },
 		{ icon: "simple-icons:springboot", name: "Spring Boot" },
 		{ icon: "fa7-brands:git-alt", name: "Git" },
+	    { icon: "lineicons:mysql", name: "MySQL" },
 		
 	],
 
