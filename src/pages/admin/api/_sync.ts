@@ -2,19 +2,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
 
-let rootDirCache: string | null = null;
-
-function getRootDir(): string {
-	if (rootDirCache) return rootDirCache;
-	// 从调用栈中推断调用者位置以计算项目根目录
-	rootDirCache = path.resolve(".");
-	return rootDirCache;
-}
-
 export async function syncContent(metaUrl: string) {
 	try {
+		// 用调用者的 import.meta.url 定位项目根目录
+		const callerRoot = fileURLToPath(new URL("../../../..", metaUrl));
+
 		// 1. 更新 content.config.ts 时间戳
-		const configPath = path.resolve(getRootDir(), "src/content.config.ts");
+		const configPath = path.resolve(callerRoot, "src/content.config.ts");
 		if (fs.existsSync(configPath)) {
 			const now = new Date();
 			fs.utimesSync(configPath, now, now);
@@ -22,7 +16,7 @@ export async function syncContent(metaUrl: string) {
 
 		// 2. 直接调用 Astro 的内容层同步
 		try {
-			const instancePath = path.resolve(getRootDir(), "node_modules/astro/dist/content/instance.js");
+			const instancePath = path.resolve(callerRoot, "node_modules/astro/dist/content/instance.js");
 			// @vite-ignore
 			const mod = await import(/* @vite-ignore */ pathToFileURL(instancePath).href);
 			if (mod?.globalContentLayer?.sync) {
