@@ -13,7 +13,8 @@ async function touchContentConfig() {
 		}
 		// 直接调用 Astro 的内容层同步（使用 import.meta.url 定位）
 		try {
-			const rootDir = new URL("../../../..", import.meta.url).pathname.replace(/^\//, "");
+			const { fileURLToPath: _furl } = await import("node:url");
+			const rootDir = _furl(new URL("../../../..", import.meta.url));
 			const instancePath = path.resolve(rootDir, "node_modules/astro/dist/content/instance.js");
 			const mod = await import(pathToFileURL(instancePath).href);
 			if (mod?.globalContentLayer?.sync) {
