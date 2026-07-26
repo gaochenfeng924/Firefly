@@ -23,11 +23,23 @@ async function touchContentConfig() {
 		} catch (_e) {
 			// 内容层同步失败不影响保存
 		}
-		// 通过 Vite HMR 通知浏览器刷新
-		const server = (globalThis as any).__viteServer as any;
-		if (server?.environments?.client?.hot) {
-			server.environments.client.hot.send({ type: "full-reload", path: "*" });
-		}
+		// 失效 Vite 模块图缓存 + 浏览器全量刷新
+		try {
+			const server = (globalThis as any).__viteServer as any;
+			if (server?.environments?.client?.hot) {
+				// 失效 SSR runner 中内容相关的模块
+				const runner = server.environments.ssr?.runner || server.environments.server?.runner;
+				if (runner?.evaluatedModules) {
+					const entries = [...runner.evaluatedModules.entries()];
+					for (const [id, mod] of entries) {
+						if (typeof id === "string" && (id.includes("content") || id.includes("data-store") || id.includes("virtual"))) {
+							runner.evaluatedModules.invalidateModule(mod);
+						}
+					}
+				}
+				server.environments.client.hot.send({ type: "full-reload", path: "*" });
+			}
+		} catch {}
 	} catch {
 		// 忽略
 	}
