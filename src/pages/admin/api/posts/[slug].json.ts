@@ -1,48 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
 import type { APIRoute } from "astro";
+import { syncContent } from "../_sync";
 
 // 触发内容同步：更新内容文件 + 强制 Astro 重新扫描
-async function touchContentConfig() {
-	try {
-		const configPath = path.resolve(process.cwd(), "src/content.config.ts");
-		if (fs.existsSync(configPath)) {
-			const now = new Date();
-			fs.utimesSync(configPath, now, now);
-		}
-		// 直接调用 Astro 的内容层同步（使用 import.meta.url 定位）
-		try {
-			const { fileURLToPath: _furl } = await import("node:url");
-			const rootDir = _furl(new URL("../../../..", import.meta.url));
-			const instancePath = path.resolve(rootDir, "node_modules/astro/dist/content/instance.js");
-			const mod = await import(pathToFileURL(instancePath).href);
-			if (mod?.globalContentLayer?.sync) {
-				await mod.globalContentLayer.sync();
-			}
-		} catch (_e) {
-			// 内容层同步失败不影响保存
-		}
-		// 失效 Vite 模块图缓存 + 浏览器全量刷新
-		try {
-			const server = (globalThis as any).__viteServer as any;
-			if (server?.environments?.client?.hot) {
-			// 失效所有 SSR 模块 + 浏览器全量刷新
-		const runner = server.environments.ssr?.runner || server.environments.server?.runner;
-			if (runner?.evaluatedModules) {
-				const entries = [...runner.evaluatedModules.entries()];
-				for (const [id, mod] of entries) {
-					if (mod?.url) runner.evaluatedModules.invalidateModule(mod);
-				}
-			}
-			server.environments.client.hot.send({ type: "full-reload", path: "*" });
-				server.environments.client.hot.send({ type: "full-reload", path: "*" });
-			}
-		} catch {}
-	} catch {
-		// 忽略
-	}
-}
 
 export const prerender = false;
 
@@ -250,7 +211,7 @@ export const PUT: APIRoute = async ({ params, request }) => {
 		const fullContent = `${frontmatter}\n${body.content || ""}\n`;
 
 		fs.writeFileSync(filePath, fullContent, "utf-8");
-		await touchContentConfig();
+		await syncContent(import.meta.url);
 
 		return new Response(
 			JSON.stringify({ success: true, message: "文章更新成功" }),
@@ -330,7 +291,7 @@ export const DELETE: APIRoute = async ({ params }) => {
 
 		// 删除文章文件
 		fs.unlinkSync(filePath);
-		await touchContentConfig();
+		await syncContent(import.meta.url);
 
 		// 扫描所有其他文章，收集仍在使用的图片
 		const usedImages = new Set<string>();
