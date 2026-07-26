@@ -104,7 +104,7 @@
 
 	async function handleDelete(slug: string) {
 		try {
-			const res = await fetch(`/admin/api/posts/${slug}.json`, { method: "DELETE" });
+			const res = await fetch(`/admin/api/posts/${encodeURIComponent(slug)}.json`, { method: "DELETE" });
 			if (!res.ok) {
 				const data = await res.json();
 				throw new Error(data.error || "删除失败");
