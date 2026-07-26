@@ -11,12 +11,11 @@ async function touchContentConfig() {
 			const now = new Date();
 			fs.utimesSync(configPath, now, now);
 		}
-		// 直接调用 Astro 的内容层同步
+		// 直接调用 Astro 的内容层同步（使用 import.meta.url 定位）
 		try {
-			const url = pathToFileURL(
-				path.resolve(process.cwd(), "node_modules/astro/dist/content/instance.js")
-			);
-			const mod = await import(url.href);
+			const rootDir = new URL("../../../..", import.meta.url).pathname.replace(/^\//, "");
+			const instancePath = path.resolve(rootDir, "node_modules/astro/dist/content/instance.js");
+			const mod = await import(pathToFileURL(instancePath).href);
 			if (mod?.globalContentLayer?.sync) {
 				await mod.globalContentLayer.sync();
 			}

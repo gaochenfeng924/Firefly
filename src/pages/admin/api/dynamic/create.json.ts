@@ -11,8 +11,9 @@ async function touchContentConfig() {
 		}
 		try {
 			const { pathToFileURL: _url } = await import("node:url");
-			const url = _url(path.resolve(process.cwd(), "node_modules/astro/dist/content/instance.js"));
-			const mod = await import(url.href);
+			const rootDir = new URL("../../../..", import.meta.url).pathname.replace(/^\//, "");
+			const instancePath = path.resolve(rootDir, "node_modules/astro/dist/content/instance.js");
+			const mod = await import(_url(instancePath).href);
 			if (mod?.globalContentLayer?.sync) await mod.globalContentLayer.sync();
 		} catch {}
 		try {
