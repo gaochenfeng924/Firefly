@@ -4,10 +4,19 @@ import type { APIRoute } from "astro";
 
 // 触发 Astro 内容集合重新同步
 function touchContentConfig() {
-	const configPath = path.resolve(process.cwd(), "src/content.config.ts");
-	if (fs.existsSync(configPath)) {
-		const now = new Date();
-		fs.utimesSync(configPath, now, now);
+	try {
+		const configPath = path.resolve(process.cwd(), "src/content.config.ts");
+		if (fs.existsSync(configPath)) {
+			const now = new Date();
+			fs.utimesSync(configPath, now, now);
+		}
+		// 清除数据缓存，强制 Astro 重新扫描
+		const dataStore = path.resolve(process.cwd(), ".astro/data-store.json");
+		if (fs.existsSync(dataStore)) {
+			fs.unlinkSync(dataStore);
+		}
+	} catch {
+		// 忽略同步错误
 	}
 }
 
