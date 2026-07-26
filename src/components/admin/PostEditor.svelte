@@ -193,7 +193,7 @@
 			<div class="editor-main">
 				<div class="form-group">
 					<label for="post-title">标题 *</label>
-					<input id="post-title" type="text" class="form-input title-input" bind:value={title} placeholder="文章标题" />
+					<input id="post-title" type="text" class="form-input title-input" bind:value={title} placeholder="文章标题" onkeydown={(e) => { if (e.key === "Enter") e.preventDefault(); }} />
 				</div>
 
 				<MarkdownEditor value={content} onChange={(v) => content = v} {showToast} />
