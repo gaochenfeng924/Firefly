@@ -19,10 +19,22 @@ export const profileConfig: ProfileConfig = {
 	// 格式同 links 的 icon/name，已预装图标集见上方注释
 	techStack: [
 		{ icon: "simple-icons:vuedotjs", name: "Vue" },
-		{ icon: "simple-icons:react", name: "React" },
-		{ icon: "simple-icons:typescript", name: "TypeScript" },
+		{ icon: "fa7-brands:css", name: "CSS" },
+		{ icon: "fa7-brands:html5", name: "HTML5" },
+		{ icon: "fa7-brands:js", name: "JavaScript" },
 		{ icon: "simple-icons:nodedotjs", name: "Node.js" },
+		{ icon: "mdi:language-c", name: "C" },
+		{ icon: "mdi:language-cpp", name: "C++" },
+		{ icon: "fa7-brands:java", name: "Java" },
 		{ icon: "simple-icons:python", name: "Python" },
+		{ icon: "fa7-brands:linux", name: "Linux" },
+		// { icon: "fa7-brands:spring-boot", name: "Spring Boot" },
+		{ icon: "fa7-brands:git-alt", name: "Git" },
+	
+		{ icon: "fa7-brands:git-alt", name: "Git" },
+		{ icon: "fa7-brands:git-alt", name: "Git" },
+		{ icon: "fa7-brands:git-alt", name: "Git" },
+		
 	],
 
 	// 链接配置
@@ -51,6 +63,12 @@ export const profileConfig: ProfileConfig = {
 			url: "mailto:2952847743@qq.com",
 			showName: false,
 			tooltip: "2952847743@qq.com",
+		},
+		{
+			name: "Bilibili",
+			icon: "fa7-brands:bilibili",
+			url: "https://space.bilibili.com/237531796?spm_id_from=333.1007.0.0",
+			showName: false,
 		},
 	],
 };

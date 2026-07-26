@@ -151,7 +151,7 @@
 											class:on={item.enabled}
 											onclick={() => {
 												const newState = !item.enabled;
-												item.enabled = newState;
+												navItems = navItems.map(i => i.key === item.key ? { ...i, enabled: newState } : i);
 												handleSaveNavToggle(item.key, newState);
 											}}
 											title={item.enabled ? "点击隐藏" : "点击显示"}
