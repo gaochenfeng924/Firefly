@@ -22,10 +22,8 @@ async function touchContentConfig() {
 				if (runner?.evaluatedModules) {
 					const entries = [...runner.evaluatedModules.entries()];
 					for (const [id, mod] of entries) {
-						if (typeof id === "string" && (id.includes("content") || id.includes("data-store") || id.includes("virtual"))) {
-							runner.evaluatedModules.invalidateModule(mod);
-						}
-					}
+					if (mod?.url) runner.evaluatedModules.invalidateModule(mod);
+				}
 				}
 				server.environments.client.hot.send({ type: "full-reload", path: "*" });
 			}

@@ -27,16 +27,15 @@ async function touchContentConfig() {
 		try {
 			const server = (globalThis as any).__viteServer as any;
 			if (server?.environments?.client?.hot) {
-				// 失效 SSR runner 中内容相关的模块
-				const runner = server.environments.ssr?.runner || server.environments.server?.runner;
-				if (runner?.evaluatedModules) {
-					const entries = [...runner.evaluatedModules.entries()];
-					for (const [id, mod] of entries) {
-						if (typeof id === "string" && (id.includes("content") || id.includes("data-store") || id.includes("virtual"))) {
-							runner.evaluatedModules.invalidateModule(mod);
-						}
-					}
+			// 失效所有 SSR 模块 + 浏览器全量刷新
+		const runner = server.environments.ssr?.runner || server.environments.server?.runner;
+			if (runner?.evaluatedModules) {
+				const entries = [...runner.evaluatedModules.entries()];
+				for (const [id, mod] of entries) {
+					if (mod?.url) runner.evaluatedModules.invalidateModule(mod);
 				}
+			}
+			server.environments.client.hot.send({ type: "full-reload", path: "*" });
 				server.environments.client.hot.send({ type: "full-reload", path: "*" });
 			}
 		} catch {}
