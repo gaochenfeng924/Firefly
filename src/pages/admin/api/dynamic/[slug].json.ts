@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { APIRoute } from "astro";
 
-function touchContentConfig() {
+async function touchContentConfig() {
 	const configPath = path.resolve(process.cwd(), "src/content.config.ts");
 	if (fs.existsSync(configPath)) {
 		const now = new Date();
@@ -112,7 +112,7 @@ export const PUT: APIRoute = async ({ params, request }) => {
 		const fullContent = `${frontmatter}${body.content || ""}\n`;
 
 		fs.writeFileSync(filePath, fullContent, "utf-8");
-		touchContentConfig();
+		await touchContentConfig();
 
 		return new Response(
 			JSON.stringify({ success: true, message: "动态更新成功" }),
@@ -165,7 +165,7 @@ export const DELETE: APIRoute = async ({ params }) => {
 		for (const m of fileContent.matchAll(/\/uploads\/[^\s)"']+/g)) uploadRefs.add(m[0]);
 
 		fs.unlinkSync(filePath);
-		touchContentConfig();
+		await touchContentConfig();
 
 		// 扫描所有文章 + 动态，收集仍在使用的图片
 		const usedImages = new Set<string>();

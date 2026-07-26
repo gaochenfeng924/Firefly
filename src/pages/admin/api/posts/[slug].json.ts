@@ -3,17 +3,17 @@ import path from "node:path";
 import type { APIRoute } from "astro";
 
 // 触发 Astro 内容集合重新同步
-function touchContentConfig() {
+async function touchContentConfig() {
 	try {
 		const configPath = path.resolve(process.cwd(), "src/content.config.ts");
 		if (fs.existsSync(configPath)) {
 			const now = new Date();
 			fs.utimesSync(configPath, now, now);
 		}
-		// 清除数据缓存，强制 Astro 重新扫描
-		const dataStore = path.resolve(process.cwd(), ".astro/data-store.json");
-		if (fs.existsSync(dataStore)) {
-			fs.unlinkSync(dataStore);
+		// 强制重新扫描内容文件
+		const { globalContentLayer } = await import("astro/dist/content/instance.js");
+		if (globalContentLayer?.sync) {
+			await globalContentLayer.sync();
 		}
 	} catch {
 		// 忽略同步错误
@@ -226,7 +226,7 @@ export const PUT: APIRoute = async ({ params, request }) => {
 		const fullContent = `${frontmatter}\n${body.content || ""}\n`;
 
 		fs.writeFileSync(filePath, fullContent, "utf-8");
-		touchContentConfig();
+		await touchContentConfig();
 
 		return new Response(
 			JSON.stringify({ success: true, message: "文章更新成功" }),
@@ -306,7 +306,7 @@ export const DELETE: APIRoute = async ({ params }) => {
 
 		// 删除文章文件
 		fs.unlinkSync(filePath);
-		touchContentConfig();
+		await touchContentConfig();
 
 		// 扫描所有其他文章，收集仍在使用的图片
 		const usedImages = new Set<string>();

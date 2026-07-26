@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { APIRoute } from "astro";
 
-function touchContentConfig() {
+async function touchContentConfig() {
 	const configPath = path.resolve(process.cwd(), "src/content.config.ts");
 	if (fs.existsSync(configPath)) {
 		const now = new Date();
