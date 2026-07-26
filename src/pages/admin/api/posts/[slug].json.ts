@@ -65,14 +65,13 @@ export const GET: APIRoute = async ({ params }) => {
 		});
 	}
 
-	const { slug: rawSlug } = params;
-	if (!rawSlug) {
+	const { slug } = params;
+	if (!slug) {
 		return new Response(JSON.stringify({ error: "缺少 slug 参数" }), {
 			status: 400,
 			headers: { "Content-Type": "application/json" },
 		});
 	}
-	const slug = decodeURIComponent(rawSlug);
 
 	const postsDir = path.resolve(process.cwd(), "src/content/posts");
 
@@ -141,14 +140,14 @@ export const PUT: APIRoute = async ({ params, request }) => {
 	}
 
 	try {
-		const { slug: rawSlug } = params;
-		if (!rawSlug) {
+		const { slug } = params;
+		if (!slug) {
 			return new Response(JSON.stringify({ error: "缺少 slug 参数" }), {
 				status: 400,
 				headers: { "Content-Type": "application/json" },
 			});
 		}
-		const slug = decodeURIComponent(rawSlug);
+
 		const postsDir = path.resolve(process.cwd(), "src/content/posts");
 
 		function findFile(dir: string): string | null {
@@ -229,14 +228,14 @@ export const DELETE: APIRoute = async ({ params }) => {
 	}
 
 	try {
-		const { slug: rawSlug } = params;
-		if (!rawSlug) {
+		const { slug } = params;
+		if (!slug) {
 			return new Response(JSON.stringify({ error: "缺少 slug 参数" }), {
 				status: 400,
 				headers: { "Content-Type": "application/json" },
 			});
 		}
-		const slug = decodeURIComponent(rawSlug);
+
 		const postsDir = path.resolve(process.cwd(), "src/content/posts");
 
 		function findFile(dir: string): string | null {

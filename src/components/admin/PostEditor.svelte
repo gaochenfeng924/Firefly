@@ -61,7 +61,7 @@
 	async function fetchPost() {
 		loading = true;
 		try {
-			const res = await fetch(`/admin/api/posts/${encodeURIComponent(slug)}.json`);
+			const res = await fetch(`/admin/api/posts/${slug}.json`);
 			if (!res.ok) throw new Error("获取文章失败");
 			const data = await res.json();
 			title = data.title || "";
@@ -117,7 +117,7 @@
 
 			let res: Response;
 			if (isEditing) {
-				res = await fetch(`/admin/api/posts/${encodeURIComponent(slug)}.json`, {
+				res = await fetch(`/admin/api/posts/${slug}.json`, {
 					method: "PUT",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify(body),
