@@ -22,7 +22,7 @@
 		if (isEditing) {
 			fetchDynamic();
 		} else {
-			published = new Date().toISOString().slice(0, 10);
+			published = new Date().toISOString();
 		}
 	});
 
@@ -105,7 +105,7 @@
 	{:else}
 		<div class="form-group">
 			<label for="dynamic-published">发布时间</label>
-			<input id="dynamic-published" type="text" class="form-input" bind:value={published} placeholder="YYYY-MM-DD HH:mm:ss" />
+			<input id="dynamic-published" type="text" class="form-input" bind:value={published} placeholder="YYYY-MM-DDTHH:mm:ss.sssZ" />
 		</div>
 		<div class="form-check">
 			<input type="checkbox" id="pinned" bind:checked={pinned} />

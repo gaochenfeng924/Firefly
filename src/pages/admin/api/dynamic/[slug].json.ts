@@ -101,7 +101,7 @@ export const PUT: APIRoute = async ({ params, request }) => {
 		}
 
 		const body = await request.json();
-		const published = body.published || new Date().toISOString().replace("T", " ").slice(0, 19);
+		const published = body.published || new Date().toISOString();
 		const frontmatter = `---\npublished: ${published}\npinned: ${body.pinned || false}\n---\n`;
 		const fullContent = `${frontmatter}${body.content || ""}\n`;
 
