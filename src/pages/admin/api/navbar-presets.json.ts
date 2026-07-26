@@ -8,6 +8,7 @@ interface NavLinkItem {
 	url: string;
 	icon: string;
 	pageKey?: string;
+	enabled?: boolean;
 }
 
 export const GET: APIRoute = async () => {
@@ -19,28 +20,35 @@ export const GET: APIRoute = async () => {
 	}
 
 	const configPath = path.resolve(process.cwd(), "src/config/navBarConfig.ts");
+	const siteConfigPath = path.resolve(process.cwd(), "src/config/siteConfig.ts");
 
 	try {
-		const fileUrl = `file:///${configPath.replace(/\\/g, "/")}`;
-		const module = await import(/* @vite-ignore */ fileUrl);
-		const presets: Record<string, unknown> = module.LinkPresets || {};
-		const content = fs.readFileSync(configPath, "utf-8");
+		const navUrl = `file:///${configPath.replace(/\\/g, "/")}`;
+		const siteUrl = `file:///${siteConfigPath.replace(/\\/g, "/")}`;
+		const navModule = await import(/* @vite-ignore */ navUrl);
+		const siteModule = await import(/* @vite-ignore */ siteUrl);
+		const presets: Record<string, unknown> = navModule.LinkPresets || {};
+		const siteConfig = siteModule.siteConfig || {};
+		const pageToggles = (siteConfig as any).pages || {};
 
 		const items: NavLinkItem[] = [];
 		for (const [key, val] of Object.entries(presets)) {
 			if (val && typeof val === "object") {
 				const v = val as Record<string, string>;
+				const pageKey = v.pageKey;
+				const enabled = pageKey ? pageToggles[pageKey] !== false : true;
 				items.push({
 					key,
 					name: v.name || key,
 					url: v.url || "/",
 					icon: v.icon || "",
-					pageKey: v.pageKey,
+					pageKey,
+					enabled,
 				});
 			}
 		}
 
-		return new Response(JSON.stringify({ items, fileContent: content }), {
+		return new Response(JSON.stringify({ items, pageToggles }), {
 			status: 200,
 			headers: { "Content-Type": "application/json" },
 		});
