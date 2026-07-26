@@ -318,7 +318,15 @@ export default defineConfig({
 		}),
 	},
 	vite: {
-		plugins: [tailwindcss()],
+		plugins: [
+			tailwindcss(),
+			{
+				name: "content-hmr",
+				configureServer(server) {
+					globalThis.__viteServer = server;
+				},
+			},
+		],
 		server: {
 			watch: {
 				ignored: ["**/package/**", "**/Firefly-docs/**"],

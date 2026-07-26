@@ -1,8 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import type { APIRoute } from "astro";
 
-// 触发 Astro 内容集合重新同步
+// 触发内容同步：更新内容文件 + 强制 Astro 重新扫描
 async function touchContentConfig() {
 	try {
 		const configPath = path.resolve(process.cwd(), "src/content.config.ts");
@@ -10,13 +11,25 @@ async function touchContentConfig() {
 			const now = new Date();
 			fs.utimesSync(configPath, now, now);
 		}
-		// 强制重新扫描内容文件
-		const { globalContentLayer } = await import("astro/dist/content/instance.js");
-		if (globalContentLayer?.sync) {
-			await globalContentLayer.sync();
+		// 直接调用 Astro 的内容层同步
+		try {
+			const url = pathToFileURL(
+				path.resolve(process.cwd(), "node_modules/astro/dist/content/instance.js")
+			);
+			const mod = await import(url.href);
+			if (mod?.globalContentLayer?.sync) {
+				await mod.globalContentLayer.sync();
+			}
+		} catch (_e) {
+			// 内容层同步失败不影响保存
+		}
+		// 通过 Vite HMR 通知浏览器刷新
+		const server = (globalThis as any).__viteServer as any;
+		if (server?.environments?.client?.hot) {
+			server.environments.client.hot.send({ type: "full-reload", path: "*" });
 		}
 	} catch {
-		// 忽略同步错误
+		// 忽略
 	}
 }
 

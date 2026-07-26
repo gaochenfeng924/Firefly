@@ -4,11 +4,17 @@ export default function contentHmr(): AstroIntegration {
 	return {
 		name: "content-hmr",
 		hooks: {
-			"server:start": ({ server }) => {
-				// 把 Vite 服务器引用存到全局，让 API 端点可以触发 HMR
-				(globalThis as any).__viteServer = server;
+			"astro:config:done": ({ config }) => {
+				// 添加一个 Vite 插件，在 dev 模式下暴露 Vite 服务器引用
+				config.vite.plugins ??= [];
+				config.vite.plugins.push({
+					name: "content-hmr-vite",
+					configureServer(server) {
+						(globalThis as any).__viteServer = server;
+					},
+				});
 			},
-			"server:done": () => {
+			"astro:server:done": () => {
 				delete (globalThis as any).__viteServer;
 			},
 		},
