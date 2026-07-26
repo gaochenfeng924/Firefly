@@ -54,6 +54,7 @@ if (process.env.NODE_ENV === "development") {
 	setMaxListeners(20);
 }
 
+
 // https://astro.build/config
 export default defineConfig({
 	site: siteConfig.site_url,
