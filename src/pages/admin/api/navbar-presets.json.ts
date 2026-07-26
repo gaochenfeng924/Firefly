@@ -62,7 +62,7 @@ export const PUT: APIRoute = async ({ request }) => {
 
 	try {
 		const body = await request.json();
-		const { key, name, url } = body as { key: string; name?: string; url?: string };
+		const { key, name, url, enabled } = body as { key: string; name?: string; url?: string; enabled?: boolean };
 
 		if (!key) {
 			return new Response(JSON.stringify({ error: "缺少 key 参数" }), {
@@ -71,11 +71,29 @@ export const PUT: APIRoute = async ({ request }) => {
 			});
 		}
 
-		const configPath = path.resolve(process.cwd(), "src/config/navBarConfig.ts");
-		let content = fs.readFileSync(configPath, "utf-8");
+		const navPath = path.resolve(process.cwd(), "src/config/navBarConfig.ts");
+		let content = fs.readFileSync(navPath, "utf-8");
 
-		// 找到 LinkPresets 中对应 key 的对象并替换 name 和 url
-		// 匹配模式: Key: { ... name: "旧值" ... url: "旧值" ... }
+		// 如果传了 enabled，切换页面开关
+		if (enabled !== undefined) {
+			const siteConfigPath = path.resolve(process.cwd(), "src/config/siteConfig.ts");
+			let siteContent = fs.readFileSync(siteConfigPath, "utf-8");
+			const pageKeyMatch = content.match(new RegExp(`${key}\\s*:\\s*\\{[^}]*?pageKey:\\s*"([^"]+)"`));
+			if (pageKeyMatch) {
+				const pageKey = pageKeyMatch[1];
+				const lines = siteContent.split("\n");
+				for (let i = 0; i < lines.length; i++) {
+					const line = lines[i].trim();
+					if (line.startsWith(`${pageKey}:`) || line.startsWith(`${pageKey} :`)) {
+						lines[i] = lines[i].replace(/(:\s*)(true|false)/, `$1${enabled ? "true" : "false"}`);
+						break;
+					}
+				}
+				fs.writeFileSync(siteConfigPath, lines.join("\n"), "utf-8");
+			}
+		}
+
+		// 更新 name 和 url
 		if (name !== undefined) {
 			const nameRegex = new RegExp(`(${key}\\s*:\\s*\\{[^}]*?name\\s*:\\s*")[^"]*(")`, "s");
 			content = content.replace(nameRegex, `$1${name.replace(/"/g, '\\"')}$2`);
@@ -85,7 +103,7 @@ export const PUT: APIRoute = async ({ request }) => {
 			content = content.replace(urlRegex, `$1${url.replace(/"/g, '\\"')}$2`);
 		}
 
-		fs.writeFileSync(configPath, content, "utf-8");
+		fs.writeFileSync(navPath, content, "utf-8");
 
 		return new Response(JSON.stringify({ success: true, message: "导航链接已更新" }), {
 			status: 200,
