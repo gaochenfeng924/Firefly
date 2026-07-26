@@ -6,7 +6,7 @@ const SITE_LANG = "zh_CN";
 
 export const siteConfig: SiteConfig = {
 	// 站点标题
-	title: "晨小岚的秘密空间",
+	title: "晨小岚的博客",
 
 	// 站点副标题
 	subtitle: "晨小岚的个人博客，记录生活点滴，分享技术经验。",
