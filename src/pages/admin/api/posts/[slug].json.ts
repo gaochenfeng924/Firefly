@@ -2,6 +2,15 @@ import fs from "node:fs";
 import path from "node:path";
 import type { APIRoute } from "astro";
 
+// 触发 Astro 内容集合重新同步
+function touchContentConfig() {
+	const configPath = path.resolve(process.cwd(), "src/content.config.ts");
+	if (fs.existsSync(configPath)) {
+		const now = new Date();
+		fs.utimesSync(configPath, now, now);
+	}
+}
+
 export const prerender = false;
 
 function parseFrontmatter(content: string): { frontmatter: Record<string, unknown>; body: string } {
@@ -208,6 +217,7 @@ export const PUT: APIRoute = async ({ params, request }) => {
 		const fullContent = `${frontmatter}\n${body.content || ""}\n`;
 
 		fs.writeFileSync(filePath, fullContent, "utf-8");
+		touchContentConfig();
 
 		return new Response(
 			JSON.stringify({ success: true, message: "文章更新成功" }),
@@ -287,6 +297,7 @@ export const DELETE: APIRoute = async ({ params }) => {
 
 		// 删除文章文件
 		fs.unlinkSync(filePath);
+		touchContentConfig();
 
 		// 扫描所有其他文章，收集仍在使用的图片
 		const usedImages = new Set<string>();

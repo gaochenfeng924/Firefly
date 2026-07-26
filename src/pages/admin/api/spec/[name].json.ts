@@ -2,6 +2,14 @@ import fs from "node:fs";
 import path from "node:path";
 import type { APIRoute } from "astro";
 
+function touchContentConfig() {
+	const configPath = path.resolve(process.cwd(), "src/content.config.ts");
+	if (require("fs").existsSync(configPath)) {
+		const now = new Date();
+		require("fs").utimesSync(configPath, now, now);
+	}
+}
+
 export const prerender = false;
 
 function parseFrontmatter(content: string): { frontmatter: Record<string, unknown>; body: string } {
@@ -130,6 +138,7 @@ export const PUT: APIRoute = async ({ params, request }) => {
 			fmLines.push("---");
 			const fullContent = `${fmLines.join("\n")}\n${body.content || ""}\n`;
 			fs.writeFileSync(filePath, fullContent, "utf-8");
+		touchContentConfig();
 		} else {
 			fs.writeFileSync(filePath, body.content || "", "utf-8");
 		}
