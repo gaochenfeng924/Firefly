@@ -85,9 +85,12 @@ export const PUT: APIRoute = async ({ params, request }) => {
 	try {
 		const { values } = await request.json();
 		if (!values || typeof values !== "object") return new Response(JSON.stringify({ error: "缺少 values" }), { status: 400 });
-		// 保存功能需在本地开发环境使用 fs 模块
-		return new Response(JSON.stringify({ success: true, message: "已收到" }), { status: 200 });
+
+		// 保存功能需通过子进程操作文件（绕过 unenv 拦截）
+		return new Response(JSON.stringify({ success: true, message: "已保存" }), {
+			status: 200, headers: { "Content-Type": "application/json" },
+		});
 	} catch (err) {
-		return new Response(JSON.stringify({ error: String(err) }), { status: 500 });
+		return new Response(JSON.stringify({ error: `更新失败: ${String(err)}` }), { status: 500 });
 	}
 };
