@@ -60,7 +60,7 @@ export const POST: APIRoute = async ({ request }) => {
 		const fileName = `${timestamp}.md`;
 		const filePath = path.resolve(process.cwd(), "src/content/dynamic", fileName);
 
-		const frontmatter = `---\npublished: ${published}\npinned: ${body.pinned || false}\n---\n`;
+		const frontmatter = `---\npublished: ${published.slice(0, 10)}\npinned: ${body.pinned || false}\n---\n`;
 		const fullContent = `${frontmatter}${content}\n`;
 
 		fs.writeFileSync(filePath, fullContent, "utf-8");

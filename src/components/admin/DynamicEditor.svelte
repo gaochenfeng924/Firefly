@@ -22,7 +22,7 @@
 		if (isEditing) {
 			fetchDynamic();
 		} else {
-			published = new Date().toISOString().replace("T", " ").slice(0, 19);
+			published = new Date().toISOString().slice(0, 10);
 		}
 	});
 
