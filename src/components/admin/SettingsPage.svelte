@@ -25,7 +25,7 @@
 	let configValues = $state<Record<string, unknown>>({});
 	let loading = $state(false);
 	let saving = $state(false);
-	let navItems = $state<Array<{ key: string; name: string; url: string; icon: string; pageKey?: string }>>([]);
+	let navItems = $state<Array<{ key: string; name: string; url: string; icon: string; pageKey?: string; enabled?: boolean }>>([]);
 	let navLoading = $state(false);
 
 	$effect(() => {
@@ -105,6 +105,21 @@
 	function updateNavItem(key: string, field: "name" | "url", value: string) {
 		navItems = navItems.map((i) => (i.key === key ? { ...i, [field]: value } : i));
 	}
+
+	async function handleSaveNavToggle(key: string, enabled: boolean) {
+		try {
+			const res = await fetch("/admin/api/navbar-presets.json", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ key, enabled }),
+			});
+			const data = await res.json();
+			if (!res.ok) throw new Error(data.error || "保存失败");
+			showToast(enabled ? "已启用" : "已隐藏", "success");
+		} catch (err) {
+			showToast(String(err), "error");
+		}
+	}
 </script>
 
 <div class="page">
@@ -120,19 +135,32 @@
 		<div class="tab-content">
 			{#if activeTab === "navbar"}
 				<div class="tab-header">
-					<h3>导航栏链接预设</h3>
-					<p class="tab-desc">修改各导航菜单项的名称和链接地址。图标需要手动编辑 navBarConfig.ts。</p>
+					<h3>导航栏管理</h3>
+					<p class="tab-desc">开启/关闭导航菜单项，修改名称和链接地址</p>
 				</div>
 				{#if navLoading}
 					<p class="loading">加载中...</p>
 				{:else}
 					<div class="nav-list">
 						{#each navItems as item (item.key)}
-							<div class="nav-item-card">
+							<div class="nav-item-card" class:disabled={!item.enabled}>
 								<div class="nav-item-header">
+									<button
+										class="toggle-btn-sm"
+										class:on={item.enabled}
+										onclick={() => {
+											item.enabled = !item.enabled;
+											handleSaveNavToggle(item.key, !item.enabled);
+										}}
+										title={item.enabled ? "点击隐藏" : "点击显示"}
+									>
+										{item.enabled ? "✅" : "⛔"}
+									</button>
 									<span class="nav-item-key">{item.key}</span>
 									{#if item.icon}<code class="nav-icon-badge">{item.icon}</code>{/if}
-									{#if item.pageKey}<span class="nav-page-badge">{item.pageKey}</span>{/if}
+									{#if item.pageKey}
+										<span class="nav-page-badge">{item.pageKey}</span>
+									{/if}
 								</div>
 								<div class="nav-item-fields">
 									<div class="nav-field">
@@ -214,7 +242,10 @@
 	.form-actions { display: flex; gap: 8px; padding-top: 8px; border-top: 1px solid var(--admin-border); }
 	.nav-list { display: flex; flex-direction: column; gap: 12px; }
 	.nav-item-card { border: 1px solid var(--admin-border); border-radius: 8px; padding: 14px; background: #fff; }
+	.nav-item-card.disabled { opacity: 0.5; background: #f9fafb; }
 	.nav-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+	.toggle-btn-sm { padding: 2px 6px; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer; font-size: 12px; background: #fff; line-height: 1.4; }
+	.toggle-btn-sm.on { background: #dcfce7; border-color: #86efac; }
 	.nav-item-key { font-weight: 700; font-size: 14px; min-width: 80px; }
 	.nav-icon-badge { font-size: 11px; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; color: var(--admin-text-secondary); }
 	.nav-page-badge { font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; }
