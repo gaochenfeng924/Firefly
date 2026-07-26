@@ -65,7 +65,11 @@ export const GET: APIRoute = async ({ params }) => {
 		});
 	}
 
-	const { slug } = params;
+	const { slug: rawSlug } = params;
+	if (!rawSlug) {
+		return new Response(JSON.stringify({ error: "缺少 slug 参数" }), { status: 400, headers: { "Content-Type": "application/json" } });
+	}
+	const slug = decodeURIComponent(rawSlug);
 	if (!slug) {
 		return new Response(JSON.stringify({ error: "缺少 slug 参数" }), {
 			status: 400,
@@ -140,7 +144,11 @@ export const PUT: APIRoute = async ({ params, request }) => {
 	}
 
 	try {
-		const { slug } = params;
+		const { slug: rawSlug } = params;
+	if (!rawSlug) {
+		return new Response(JSON.stringify({ error: "缺少 slug 参数" }), { status: 400, headers: { "Content-Type": "application/json" } });
+	}
+	const slug = decodeURIComponent(rawSlug);
 		if (!slug) {
 			return new Response(JSON.stringify({ error: "缺少 slug 参数" }), {
 				status: 400,
@@ -228,7 +236,11 @@ export const DELETE: APIRoute = async ({ params }) => {
 	}
 
 	try {
-		const { slug } = params;
+		const { slug: rawSlug } = params;
+	if (!rawSlug) {
+		return new Response(JSON.stringify({ error: "缺少 slug 参数" }), { status: 400, headers: { "Content-Type": "application/json" } });
+	}
+	const slug = decodeURIComponent(rawSlug);
 		if (!slug) {
 			return new Response(JSON.stringify({ error: "缺少 slug 参数" }), {
 				status: 400,
