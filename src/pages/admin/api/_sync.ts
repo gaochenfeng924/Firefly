@@ -5,7 +5,8 @@ import { pathToFileURL, fileURLToPath } from "node:url";
 export async function syncContent(metaUrl: string) {
 	try {
 		// 用调用者的 import.meta.url 定位项目根目录
-		const callerRoot = fileURLToPath(new URL("../../../..", metaUrl));
+		// 文件路径示例: src/pages/admin/api/posts/create.json.ts → 需要上溯 6 层
+		const callerRoot = fileURLToPath(new URL("../../../../..", metaUrl));
 
 		// 1. 更新 content.config.ts 时间戳
 		const configPath = path.resolve(callerRoot, "src/content.config.ts");
