@@ -40,4 +40,4 @@ package/
 # vibe coding
 .codex*
 .claude
-.mimocode
+.mimocode.wrangler/
