@@ -92,9 +92,21 @@ export const PUT: APIRoute = async ({ request }) => {
 			const pageKeyMatch = content.match(new RegExp(`${key}\\s*:\\s*\\{[^}]*?pageKey:\\s*"([^"]+)"`));
 			if (pageKeyMatch) {
 				const pageKey = pageKeyMatch[1];
-				const re = new RegExp(`(${pageKey}\\s*:\\s*)true|false`);
-				siteContent = siteContent.replace(re, `$1${enabled ? "true" : "false"}`);
-				fs.writeFileSync(siteConfigPath, siteContent, "utf-8");
+				// 匹配 pageKey: true 或 pageKey: false（跳过注释行）
+				const lines = siteContent.split("\n");
+				let changed = false;
+				for (let i = 0; i < lines.length; i++) {
+					const line = lines[i].trim();
+					// 如果该行没有注释，且匹配 key: true/false
+					if (line.startsWith(`${pageKey}:`) || line.startsWith(`${pageKey} :`)) {
+						lines[i] = lines[i].replace(/(:\s*)(true|false)/, `$1${enabled ? "true" : "false"}`);
+						changed = true;
+						break;
+					}
+				}
+				if (changed) {
+					fs.writeFileSync(siteConfigPath, lines.join("\n"), "utf-8");
+				}
 			}
 		}
 

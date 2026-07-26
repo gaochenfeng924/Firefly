@@ -149,9 +149,10 @@
 										class="toggle-btn-sm"
 										class:on={item.enabled}
 										onclick={() => {
-											item.enabled = !item.enabled;
-											handleSaveNavToggle(item.key, !item.enabled);
-										}}
+										const newState = !item.enabled;
+										item.enabled = newState;
+										handleSaveNavToggle(item.key, newState);
+									}}
 										title={item.enabled ? "点击隐藏" : "点击显示"}
 									>
 										{item.enabled ? "✅" : "⛔"}
