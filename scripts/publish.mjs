@@ -31,14 +31,14 @@ try {
 	// 同步所有文件（内容 + 配置，不含管理面板代码）
 	console.log("📋 从 admin-panel 同步更改...");
 	try {
-		const masterFiles = run("git ls-tree -r master --name-only -- src/content/ src/config/").split("\n").filter(Boolean);
-		const adminFiles = run("git ls-tree -r admin-panel --name-only -- src/content/ src/config/").split("\n").filter(Boolean);
+		const masterFiles = run("git ls-tree -r master --name-only -- src/content/ src/config/ src/assets/").split("\n").filter(Boolean);
+		const adminFiles = run("git ls-tree -r admin-panel --name-only -- src/content/ src/config/ src/assets/").split("\n").filter(Boolean);
 		const toDelete = masterFiles.filter(f => !adminFiles.includes(f));
 		for (const f of toDelete) {
 			try { run(`git rm --quiet "${f}"`, true); } catch {}
 		}
 	} catch {}
-	run("git checkout admin-panel -- src/content/ src/config/");
+	run("git checkout admin-panel -- src/content/ src/config/ src/assets/");
 
 	// 提交并推送 master
 	run("git add -A");
