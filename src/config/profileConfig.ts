@@ -28,7 +28,7 @@ export const profileConfig: ProfileConfig = {
 		{ icon: "fa7-brands:java", name: "Java" },
 		{ icon: "simple-icons:python", name: "Python" },
 		{ icon: "fa7-brands:linux", name: "Linux" },
-		// { icon: "fa7-brands:spring-boot", name: "Spring Boot" },
+		{ icon: "simple-icons:springboot", name: "Spring Boot" },
 		{ icon: "fa7-brands:git-alt", name: "Git" },
 	
 		{ icon: "fa7-brands:git-alt", name: "Git" },
