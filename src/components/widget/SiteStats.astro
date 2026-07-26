@@ -156,21 +156,22 @@ const stats = [
       element.textContent = diffDays.toString();
     });
 
-    // 更新最后活动时间
+    // 更新最后活动时间（按本地日期比较，以00:00为分界线）
     if (lastPostDate) {
       const lastPost = new Date(lastPostDate);
-      const timeSinceLastPost = Math.abs(today.getTime() - lastPost.getTime());
-      const daysSinceLastUpdate = Math.floor(timeSinceLastPost / (1000 * 60 * 60 * 24));
+      const todayLocal = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+      const lastLocal = `${lastPost.getFullYear()}-${String(lastPost.getMonth()+1).padStart(2,"0")}-${String(lastPost.getDate()).padStart(2,"0")}`;
+      const diffDays = Math.round((new Date(todayLocal).getTime() - new Date(lastLocal).getTime()) / (1000 * 60 * 60 * 24));
 
       const lastUpdateElements = document.querySelectorAll('[data-stat-id="last-update"]');
       lastUpdateElements.forEach((element) => {
-        if (daysSinceLastUpdate === 0) {
+        if (diffDays === 0) {
           element.textContent = todayText;
           if (element.nextElementSibling) {
             element.nextElementSibling.style.display = 'none';
           }
         } else {
-          element.textContent = daysSinceLastUpdate.toString();
+          element.textContent = diffDays.toString();
           if (element.nextElementSibling) {
             element.nextElementSibling.style.display = '';
           }
