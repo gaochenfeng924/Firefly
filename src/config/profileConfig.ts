@@ -31,7 +31,7 @@ export const profileConfig: ProfileConfig = {
 		{ icon: "simple-icons:springboot", name: "Spring Boot" },
 		{ icon: "fa7-brands:git-alt", name: "Git" },
 	    { icon: "lineicons:mysql", name: "MySQL" },
-		
+	    { icon: "fa7-brands:obsidian", name: "Obsidian" },
 	],
 
 	// 链接配置
