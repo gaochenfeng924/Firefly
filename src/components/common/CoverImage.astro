@@ -207,7 +207,7 @@ const remoteReferrerPolicy =
 		/>
 	)}
 
-	<!-- 远程图片 -->
+	<!-- 远程图片（仅外部API图片标记为remote） -->
 	{!isLocal && (
 		<img
 			src={isPublic ? url(src) : src}
@@ -217,7 +217,7 @@ const remoteReferrerPolicy =
 			loading={loading}
 			decoding="async"
 			data-cover-img
-			data-remote="true"
+			data-remote={isPublic ? undefined : "true"}
 			referrerpolicy={remoteReferrerPolicy}
 		/>
 	)}
