@@ -258,6 +258,9 @@ importers:
       subset-font:
         specifier: ^2.5.0
         version: 2.5.0
+      wrangler:
+        specifier: ^4.115.0
+        version: 4.115.0
 
 packages:
 
@@ -6080,7 +6083,7 @@ snapshots:
       hast-util-to-string: 3.0.1
       hastscript: 9.0.1
       i18next: 26.3.6(typescript@6.0.3)
-      js-yaml: 4.2.0
+      js-yaml: 4.3.0
       klona: 2.0.6
       magic-string: 0.30.21
       mdast-util-directive: 3.1.0

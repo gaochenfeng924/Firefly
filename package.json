@@ -104,7 +104,8 @@
     "postcss-import": "^16.1.1",
     "postcss-nesting": "^14.0.0",
     "rehype-callouts": "^2.2.0",
-    "subset-font": "^2.5.0"
+    "subset-font": "^2.5.0",
+    "wrangler": "^4.115.0"
   },
   "packageManager": "pnpm@9.14.4"
 }
