@@ -31,12 +31,20 @@ try {
 
 	console.log("📋 同步所有更改（content + config + assets）...");
 	// 先清空再复制，确保已删除的文件不残留
+<<<<<<< HEAD
 	const dirs = ["src/content/posts", "src/content/dynamic"];
+=======
+	const dirs = ["src/content/posts", "src/content/dynamic", "public/uploads"];
+>>>>>>> admin-panel
 	for (const d of dirs) {
 		if (existsSync(d)) rmSync(d, { recursive: true, force: true });
 		mkdirSync(d, { recursive: true });
 	}
+<<<<<<< HEAD
 	run("git checkout admin-panel -- src/content/ src/config/ src/assets/");
+=======
+	run("git checkout admin-panel -- src/content/ src/config/ src/assets/ public/uploads/");
+>>>>>>> admin-panel
 
 	// 提交并推送 master
 	run("git add -A");

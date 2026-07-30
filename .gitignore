@@ -40,4 +40,8 @@ package/
 # vibe coding
 .codex*
 .claude
-.mimocode
+.mimocode.wrangler/
+
+# Build artifacts
+.build-exclude/
+.wrangler/
