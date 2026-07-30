@@ -41,3 +41,7 @@ package/
 .codex*
 .claude
 .mimocode.wrangler/
+
+# Build artifacts
+.build-exclude/
+.wrangler/
