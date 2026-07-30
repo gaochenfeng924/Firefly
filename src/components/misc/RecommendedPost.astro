@@ -13,7 +13,6 @@ interface Props {
 
 const { relatedPosts, currentPostId } = Astro.props;
 const apiUrl = url("/api/allPostMeta.json");
-const relatedIds = JSON.stringify(relatedPosts.map((p) => p.id));
 const noRelatedPostsText = i18n(I18nKey.noRelatedPosts);
 const noRandomPostsText = i18n(I18nKey.noRandomPosts);
 ---
@@ -92,7 +91,6 @@ const noRandomPostsText = i18n(I18nKey.noRandomPosts);
       class="flex-1 flex items-center justify-center"
       data-api-url={apiUrl}
       data-current-id={currentPostId}
-      data-related-ids={relatedIds}
     >
       <div id="random-posts-empty" style="display:none" class="flex flex-col items-center text-black/30 dark:text-white/30 transition">
         <Icon is:inline name="material-symbols:article-outline" class="text-4xl mb-3 opacity-50" />
@@ -109,10 +107,8 @@ function renderRandomPosts() {
 
   var apiUrl = container.dataset.apiUrl;
   var currentId = container.dataset.currentId;
-  var relatedIds = JSON.parse(container.dataset.relatedIds || '[]');
   var excludeSet = {};
   excludeSet[currentId] = true;
-  for (var i = 0; i < relatedIds.length; i++) excludeSet[relatedIds[i]] = true;
 
   function render(allPosts) {
     var emptyTemplate = document.getElementById('random-posts-empty');

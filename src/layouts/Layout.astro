@@ -599,7 +599,34 @@ const siteLang = lang.replace("_", "-");
 
     <!-- Fancybox Manager -->
     <FancyboxManager />
-  </body>
+  
+{import.meta.env.PROD && (
+<script is:inline define:vars={{ scriptUrl: url('/pagefind/pagefind.js') }}>
+    if (!window.pagefind) {
+        async function loadPagefind() {
+            const pagefindUrl = scriptUrl.replace(/\/$/, '');
+            try {
+                const response = await fetch(pagefindUrl, { method: 'HEAD' });
+                if (response.status !== 200) {
+                    return;
+                }
+                const pagefind = await import(pagefindUrl);
+                await pagefind.options({
+                    'excerptLength': 20
+                });
+                window.pagefind = pagefind;
+                window.dispatchEvent(new Event('pagefindready'));
+            } catch (error) {
+                console.warn('Pagefind script not found or failed to load.');
+                window.dispatchEvent(new Event('pagefindloaderror'));
+            }
+        }
+        loadPagefind();
+    }
+</script>
+)}
+
+</body>
 </html>
 
 <style
